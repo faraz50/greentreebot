@@ -1,0 +1,14 @@
+{
+  "url": "https://greentreebot.com",
+  "name": "GreenTree Airdrop",
+  "iconUrl": "https://greentreebot.com/static/logo.png",
+  "termsOfUseUrl": "https://greentreebot.com/terms",
+  "privacyPolicyUrl": "https://greentreebot.com/privacy",
+  "twaReturnUrl": "https://t.me/Green_Treebot/webapp",
+  "items": [
+    {
+      "name": "ton_addr"
+    }
+  ]
+}
+

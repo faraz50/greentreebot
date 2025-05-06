@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenTree Info</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('info.png') no-repeat center;
+            background-size: contain; /* Ensures the full image is visible */
+            background-color: #e0f7e9; /* Fallback background color */
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .content-container {
+            width: 90%;
+            max-width: 600px;
+            height: 90%;
+            background: rgba(255, 255, 255, 0.3); /* Lighter background for more visibility */
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(6px);
+            padding: 15px 20px;
+            overflow-y: auto;
+            text-align: center;
+            color: #000000; /* Dark text for better contrast */
+        }
+        .content-container h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        .content-container p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .home-button {
+            margin-top: 15px;
+            padding: 10px 30px;
+            font-size: 1rem;
+            background: #4CAF50;
+            border: none;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .home-button:hover {
+            background: #45a049;
+            transform: scale(1.1);
+        }
+        .home-button:active {
+            transform: scale(0.95);
+        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                background-size: cover; /* Switch to cover on smaller devices for better aesthetics */
+            }
+            .content-container {
+                width: 95%;
+                height: 85%;
+                font-size: 0.9rem;
+            }
+            .content-container h1 {
+                font-size: 1.5rem;
+            }
+            .home-button {
+                font-size: 0.9rem;
+                padding: 8px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content-container">
+        <h1>Build a Greener and More Sustainable World with GreenTree</h1>
+        <p>Welcome to the world of GreenTree, where technology and nature unite to create a healthier future.</p>
+        <p>In today’s world, climate change, depletion of natural resources, and environmental pollution are significant challenges we face. <strong>The GreenTree token</strong> provides a unique opportunity not only to contribute to nature conservation but also to use blockchain technology for making a positive impact.</p>
+        <h2>How Can You Help?</h2>
+        <p><strong>1. Sustainable Investment:</strong> Use <strong>blockchain</strong>, especially the <strong>GreenTree token</strong>, to support projects aimed at conserving forests, water resources, and reducing pollutants.</p>
+        <p><strong>2. Support Green Innovation:</strong> By purchasing and holding tokens, you empower investments in green technology projects.</p>
+        <p><strong>3. The Power of Community:</strong> Join the GreenTree network, invite others, and play a key role in spreading awareness.</p>
+        <h2>Why GreenTree?</h2>
+        <p><strong>Transparency:</strong> All transactions and investments are transparently recorded on the blockchain.</p>
+        <p><strong>Community-Driven:</strong> Every token adds more power to the community in protecting our planet.</p>
+        <p><strong>Real Change:</strong> Your participation funds projects that directly restore and protect the environment.</p>
+        <p>Let’s take a step together towards a healthier world, where future generations can also enjoy the beauty and tranquility of nature.</p>
+        <p><strong>Join us, GreenTree is the path to the future.</strong></p>
+        <button class="home-button" onclick="navigateHome()">Home</button>
+    </div>
+
+<script>
+    function navigateHome() {
+        let userId = localStorage.getItem("user_id") || "Unknown";
+        window.location.href = `index.html?user_id=${encodeURIComponent(userId)}`;
+    }
+</script>
+</body>
+</html>

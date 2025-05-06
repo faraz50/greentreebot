@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: greentreebot
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python server.py
+    envVars:
+      - key: API_SECRET
+        value: 452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7

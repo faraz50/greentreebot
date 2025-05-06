@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks & Rewards</title>
+    <link rel="icon" type="image/x-icon" href="http://127.0.0.1:5000/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@tonconnect/sdk@3.1.0/dist/tonconnect-sdk.min.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@2.1.0/dist/tonconnect-ui.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    window.Telegram = window.Telegram || {};
+    window.Telegram.WebApp = window.Telegram.WebApp || {};
+    window.initDataUnsafe = window.Telegram.WebApp.initDataUnsafe || {};
+
+    let telegramUserId = window.initDataUnsafe.user?.id || null;
+    if (telegramUserId) {
+        localStorage.setItem("user_id", telegramUserId);
+        window.userId = telegramUserId;
+    } else {
+        console.warn("⚠️ No Telegram user_id, fallback to localStorage.");
+    }
+</script>
+    <script defer src="script.js"></script>
+    </body>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1e7e34, #28a745);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+        .glass-button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            padding: 15px;
+            margin: 10px;
+            width: 100%;
+            font-size: 16px;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .glass-button:hover {
+            background: linear-gradient(to right, #1B5E20, #43A047);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        #wallet-address {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .modal.show {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .modal a {
+            display: block;
+            margin: 10px 0;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complete Tasks & Earn Tokens</h1>
+
+        <!-- این خط را اضافه کن -->
+        <p>Tokens: <span id="token-count">Loading...</span></p>
+        <p>Invites: <span id="invite-count">Loading...</span></p>
+
+        <button id="connect-wallet" class="glass-button">Connect TON Wallet</button>
+        <input type="text" id="wallet-address" placeholder="Your Wallet Address" readonly>
+        <button id="invite-friends" class="glass-button">Invite Friends (Earn 500 Tokens)</button>
+        <button id="join-social" class="glass-button">Join Social Networks</button>
+        <button id="purchase-token" class="glass-button">Purchase Tokens</button>
+        <button id="back" class="glass-button" onclick="window.location.href='index.html?user_id=' + encodeURIComponent(localStorage.getItem('user_id'))">⬅ Back to Main</button>
+    </div>
+
+    <div id="wallet-connect"></div>
+    <div id="purchase-connect"></div>
+
+    <div id="social-modal" class="modal">
+        <h2>Join & Earn 100 Tokens per Platform</h2>
+        <button class="glass-button social-btn" data-platform="youtube" data-url="https://www.youtube.com/@Green_Tree-o7f">Join YouTube</button>
+        <button class="glass-button social-btn" data-platform="twitter" data-url="https://x.com/Green_Tree_coin">Join Twitter</button>
+        <button class="glass-button social-btn" data-platform="channel" data-url="https://t.me/GreenTree_coin">Join Telegram Channel</button>
+        <button class="glass-button social-btn" data-platform="group" data-url="https://t.me/+odhwo19nVSg5YjFk">Join Telegram Group</button>
+        <button id="close-modal" class="glass-button">Close</button>
+    </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("invite-friends").addEventListener("click", () => {
+        const userId = localStorage.getItem("user_id");
+        if (!userId) {
+            alert("❌ No user ID found!");
+            return;
+        }
+        const inviteUrl = `https://t.me/Green_Treebot?start=${userId}`;
+        const inviteMessage = `
+        🌳 Embark on your GreenTree journey with me!
+        🎁 Earn tokens effortlessly while we grow a greener future together!
+        👥 Invite friends, plant trees, and let’s make the world better — one token at a time!
+        🚀 Tap to join now: ${inviteUrl}
+        `;
+
+        const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteUrl)}&text=${encodeURIComponent(inviteMessage)}`;
+        window.open(shareUrl, "_blank");
+    });
+
+    document.getElementById("join-social").addEventListener("click", () => {
+        const modal = document.getElementById("social-modal");
+        modal.classList.add("show");
+    });
+
+    document.getElementById("close-modal").addEventListener("click", () => {
+        const modal = document.getElementById("social-modal");
+        modal.classList.remove("show");
+    });
+});
+</script>
+     <div id="ton-connect-button"></div>
+     <script src="tonconnect-manager.js"></script>
+     <script src="wallet.js"></script>
+     <script src="purchase.js"></script>
+</body>
+</html>

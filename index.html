@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>عنوان صفحه شما</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">  <!-- این خط رو اضافه کن -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>GreenTree Airdrop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #1e7e34, #28a745); /* همان مثل tasks page */
+            color: white; /* متن سفید برای خوانایی بیشتر */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .banner {
+            width: 100%;
+            height: 200px;
+            background: url('GreenTree_Banner_Design_1.png') no-repeat center/cover;
+            position: relative;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+
+        .welcome-message {
+            margin-top: 10px;
+            font-size: 1.8rem;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .tokens {
+            font-size: 2rem;
+            text-align: center;
+            color: #ffffff;
+            margin: auto 0;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+        }
+
+        .button {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            flex: 1;
+            max-width: 120px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:hover {
+            background: linear-gradient(to right, #1B5E20, #43A047);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+    </style>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    
+    window.Telegram = window.Telegram || {};
+    window.Telegram.WebApp = window.Telegram.WebApp || {};
+    window.initDataUnsafe = window.Telegram.WebApp.initDataUnsafe || {};
+
+    let telegramUserId = window.initDataUnsafe.user?.id || null;
+    if (telegramUserId) {
+        localStorage.setItem("user_id", telegramUserId);
+        window.userId = telegramUserId;
+        console.log("✅ user_id set from Telegram WebApp:", telegramUserId);
+    } else {
+        console.warn("⚠️ Telegram user_id not available. Fallback to URL/localStorage");
+    }
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get("user_id") || localStorage.getItem("user_id") || "Unknown";
+    let userName = localStorage.getItem("user_name") || "Guest";
+    let tokens = urlParams.get("tokens") || localStorage.getItem("tokens") || "0";
+
+    localStorage.setItem("user_id", userId);
+    localStorage.setItem("user_name", userName);
+    document.getElementById("user-id").textContent = userId;
+    document.getElementById("user-name").textContent = userName;
+    document.getElementById("token-count").textContent = tokens;
+
+    console.log("🔍 Debug: User ID:", userId);
+    console.log("🔍 Debug: Tokens:", tokens);
+});
+</script>
+
+</head>
+<body>
+    <div class="banner">
+        <div class="user-info">
+            👤 <span id="user-name">Guest</span> | 🆔 <span id="user-id">Unknown</span>
+        </div>
+    </div>
+    <div class="stats-ticker">
+        <div class="ticker-content">
+            <span>👥 Users: <span id="total-users">Loading...</span></span>
+            <span>💰 Tokens Distributed: <span id="total-tokens">Loading...</span></span>
+            <span>🔄 Transactions: <span id="total-transactions">Loading...</span></span>
+        </div>
+        <div class="ticker-content">
+            <span>👥 Users: <span id="total-users-clone">Loading...</span></span>
+            <span>💰 Tokens Distributed: <span id="total-tokens-clone">Loading...</span></span>
+            <span>🔄 Transactions: <span id="total-transactions-clone">Loading...</span></span>
+        </div>
+    </div>
+    <div class="welcome-message">Welcome to GreenTree Airdrop! 🌱</div>
+    <div class="tokens">Your Tokens: <span id="token-count">0</span></div>
+    <div class="buttons">
+        <button class="button" onclick="refreshPage('index.html')">Home</button>
+        <button class="button" onclick="navigateTo('tasks_page.html')">Tasks</button>
+        <button class="button" onclick="navigateTo('info_page_optimized.html')">Info</button>
+    </div>
+    <script src="script.js" defer></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(() => {
+            if (typeof window.TON_CONNECT_UI !== "undefined") {
+                window.TonConnectUI = window.TON_CONNECT_UI.TonConnectUI;
+                console.log("✅ TonConnectUI set from TON_CONNECT_UI in index.html!", window.TonConnectUI);
+            } else {
+                console.error("❌ TON_CONNECT_UI is still undefined in index.html!");
+            }
+        }, 3000);
+    });
+</script>
+<script>
+async function fetchGlobalStats() {
+    try {
+        const response = await fetch(`${window.SERVER_URL}/get_global_stats`, {
+            headers: {
+                "API-SECRET": window.API_SECRET,
+                "ngrok-skip-browser-warning": "true"
+            }
+        });
+        const data = await response.json();
+        console.log("📊 Global Stats:", data);
+
+        document.getElementById("total-users").textContent = data.total_users;
+        document.getElementById("total-tokens").textContent = data.total_tokens_distributed;
+        document.getElementById("total-transactions").textContent = data.total_transactions;
+
+        // 👇 این‌ها رو اضافه کن! ✅
+        document.getElementById("total-users-clone").textContent = data.total_users;
+        document.getElementById("total-tokens-clone").textContent = data.total_tokens_distributed;
+        document.getElementById("total-transactions-clone").textContent = data.total_transactions;
+    } catch (error) {
+        console.error("❌ Error fetching global stats:", error);
+    }
+}
+document.addEventListener("DOMContentLoaded", fetchGlobalStats);
+</script>
+    <div id="ton-connect-button"></div>
+    <div id="toast" class="toast"></div>
+    <!-- 📦 TonConnect SDK v3.1.0 -->
+    <script src="https://unpkg.com/@tonconnect/sdk@3.1.0/dist/tonconnect-sdk.min.js"></script>
+
+    <!-- 🎨 TonConnect UI v2.1.0 -->
+    <script src="https://unpkg.com/@tonconnect/ui@2.1.0/dist/tonconnect-ui.min.js"></script>
+</body>
+</html>

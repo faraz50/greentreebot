@@ -1,0 +1,202 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to bottom, #145A32, #1E8449);
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: #1B5E20;
+}
+
+/* استایل جدید برای نمایش مقدار توکن‌ها */
+#token-count {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+
+.glass-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 15px;
+    margin: 10px;
+    width: 100%;
+    font-size: 16px;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.3), rgba(255,255,255,0));
+    transform: skewX(-25deg);
+    transition: left 0.4s;
+}
+
+.glass-button:hover::before {
+    left: 125%;
+}
+
+.glass-button:hover {
+    background: linear-gradient(to right, #1B5E20, #43A047);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+    .container {
+        width: 95%;
+    }
+}
+
+/* استایل بخش آمار */
+.container h3 {
+    margin-bottom: 10px;
+    color: #43A047;
+}
+
+.container p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+.stats-ticker {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #fff;
+    position: relative;
+    font-family: 'Space Mono', monospace;
+}
+
+.ticker-content {
+    display: inline-flex;
+    gap: 50px;
+    animation: tickerMove 15s linear infinite;
+}
+
+@keyframes tickerMove {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.ticker-content span {
+    min-width: 250px;
+    display: inline-block;
+    text-align: center;
+}
+
+.toast {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #323232;
+  color: #fff;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.5s, bottom 0.5s;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 50px;
+}
+
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.stats-ticker {
+  background: linear-gradient(270deg, #0f2027, #203a43, #2c5364);
+  background-size: 600% 600%;
+  animation: gradientBackground 8s ease infinite;
+}
+
+@keyframes gradientBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  animation: fadeIn 2.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+body {
+  background: linear-gradient(270deg, #e0f7fa, #e0f2f1, #e0f7fa);
+  background-size: 600% 600%;
+  animation: subtleBackground 15s ease infinite;
+}
+
+@keyframes subtleBackground {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+#toast {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.container, .glass-button, h1, h2, h3, p, .stats-ticker {
+  opacity: 0;
+  animation: fadeInContent 2.5s ease-in forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes fadeInContent {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
