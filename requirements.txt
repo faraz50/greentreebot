@@ -1,3 +1,4 @@
 flask
 pyTelegramBotAPI
 requests
+flask_cors
