@@ -5,12 +5,35 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://greentreebot.onrender.com",
+            "https://t.me"
+        ],
+        "allow_headers": [
+            "Content-Type", 
+            "API-SECRET", 
+            "ngrok-skip-browser-warning"
+        ],
+        "supports_credentials": True,
+        "methods": ["GET", "POST", "OPTIONS"]
+    }
+})
+
 @app.after_request
 def apply_cors(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type,API-SECRET,ngrok-skip-browser-warning"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
+    origin = request.headers.get('Origin')
+    allowed_origins = ["https://greentreebot.onrender.com", "https://t.me"]
+
+    # فقط در صورتی که origin در لیست مجاز باشد، آن را تنظیم کن
+    if origin in allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, API-SECRET, ngrok-skip-browser-warning"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+
     return response
 
 DB_FILE = "airdrop_bot.db"
@@ -27,7 +50,7 @@ def get_db_connection():
 
 @app.before_request
 def verify_api_secret():
-    allowed_routes = ["register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count"]
+    allowed_routes = ["index", "register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count"]
     if request.endpoint not in allowed_routes:
         secret = request.headers.get("API-SECRET")
         print(f"🔍 Received API_SECRET: {secret}")
