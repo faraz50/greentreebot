@@ -399,9 +399,3 @@ def get_global_stats():
         "total_transactions": total_transactions
     }), 200
 
-import os
-
-PORT = int(os.environ.get("PORT", 5000))
-if __name__ == "__main__":
-    print(f"🚀 Running on port {PORT}")
-    app.run(host="0.0.0.0", port=PORT)
