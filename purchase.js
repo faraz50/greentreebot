@@ -1,5 +1,7 @@
 console.log("✅ Purchase.js Loaded!");
 
+window.SERVER_URL = "https://greentreebot.onrender.com";
+
 const purchaseConnector = window.TonConnectManager.getInstance();
 const purchaseButton = document.getElementById("purchase-token");
 

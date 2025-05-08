@@ -1,9 +1,9 @@
 {
-  "url": "https://greentreebot.com",
+  "url": "https://greentreebot.onrender.com",
   "name": "GreenTree Airdrop",
-  "iconUrl": "https://greentreebot.com/static/logo.png",
-  "termsOfUseUrl": "https://greentreebot.com/terms",
-  "privacyPolicyUrl": "https://greentreebot.com/privacy",
+  "iconUrl": "https://greentreebot.onrender.com/static/logo.png",
+  "termsOfUseUrl": "https://greentreebot.onrender.com/terms",
+  "privacyPolicyUrl": "https://greentreebot.onrender.com/privacy",
   "twaReturnUrl": "https://t.me/Green_Treebot/webapp",
   "items": [
     {

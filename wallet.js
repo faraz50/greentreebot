@@ -1,5 +1,7 @@
 console.log("✅ Wallet.js Loaded!");
 
+window.SERVER_URL = "https://greentreebot.onrender.com";
+
 const walletConnector = window.TonConnectManager.getInstance();
 const connectWalletButton = document.getElementById("connect-wallet");
 

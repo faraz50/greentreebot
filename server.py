@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, origins="*", allow_headers=["Content-Type", "API-SECRET", "ngrok-skip-browser-warning"], methods=["GET", "POST", "OPTIONS"])
+CORS(app, origins=["https://greentreebot.onrender.com", "https://t.me"], allow_headers=["Content-Type", "API-SECRET", "ngrok-skip-browser-warning"], methods=["GET", "POST", "OPTIONS"])
 @app.after_request
 def apply_cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"

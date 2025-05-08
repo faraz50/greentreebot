@@ -3,7 +3,7 @@ console.log("✅ TonConnect Manager Loaded!");
 // Singleton Manager
 class TonConnectManager {
     constructor() {
-        this.manifestUrl = "https://greentreebot.com/tonconnect-manifest.json";
+        this.manifestUrl = "https://greentreebot.onrender.com/tonconnect-manifest.json";
         this.instance = null;
         this.activeHandler = null; // 🎯 اضافه شد
     }

@@ -2,7 +2,7 @@
 if (!window.TonConnect) {
     try {
         window.TonConnect = new window.TON_CONNECT_UI.TonConnect({
-            manifestUrl: "https://greentreebot.com/tonconnect-manifest.json"
+            manifestUrl: "https://greentreebot.onrender.com/tonconnect-manifest.json"
         });
         console.log("✅ TonConnect Initialized Successfully!");
     } catch (error) {
@@ -81,7 +81,7 @@ if (userIdFromUrl && userIdFromUrl !== "null" && userIdFromUrl !== "undefined") 
     console.log("✅ Final User ID:", window.userId);
 });
 
-        window.SERVER_URL = "https://3d21-193-106-250-24.ngrok-free.app";
+        window.SERVER_URL = "https://greentreebot.onrender.com";
         console.log("✅ SERVER_URL Set To:", window.SERVER_URL);
 
 

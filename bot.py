@@ -4,8 +4,8 @@ import requests
 from datetime import datetime
 
 API_TOKEN = "7781261232:AAFW2lbifvSazzoGt5JF7Rzdby-aD3wgAfc"
-WEBAPP_URL = "https://greentreebot.com/"
-SERVER_URL = "https://3d21-193-106-250-24.ngrok-free.app"
+WEBAPP_URL = "https://greentreebot.onrender.com/"
+SERVER_URL = "https://greentreebot.onrender.com"
 API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7"
 
 bot = telebot.TeleBot(API_TOKEN)
