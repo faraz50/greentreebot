@@ -34,6 +34,10 @@ def verify_api_secret():
         if not secret or secret != API_SECRET:
             return jsonify({"error": "Invalid API-SECRET"}), 403
 
+@app.route("/")
+def index():
+    return send_from_directory("static", "index.html")
+
 @app.route("/register_user", methods=["POST"])
 def register_user():
     data = request.get_json()
@@ -395,5 +399,4 @@ def get_global_stats():
         "total_transactions": total_transactions
     }), 200
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+# حذف `app.run()` در انتهای فایل
