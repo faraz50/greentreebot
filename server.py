@@ -9,7 +9,8 @@ CORS(app, resources={
     r"/*": {
         "origins": [
             "https://greentreebot.onrender.com",
-            "https://t.me"
+            "https://t.me",
+            "http://127.0.0.1:5000"  # اضافه شده برای حالت لوکال
         ],
         "allow_headers": [
             "Content-Type", 
@@ -169,8 +170,12 @@ def update_tokens():
 
     return jsonify({"success": True, "total_tokens": new_total_tokens}), 200
 
+import traceback
+
 @app.errorhandler(500)
 def internal_error(error):
+    print("❌ Internal Server Error: ", error)
+    print(traceback.format_exc())  # جزئیات کامل خطا
     return jsonify({"error": "Internal Server Error", "message": str(error)}), 500
 
 @app.route('/favicon.ico')
@@ -422,3 +427,9 @@ def get_global_stats():
         "total_transactions": total_transactions
     }), 200
 
+import os
+
+if __name__ == "__main__":
+    PORT = int(os.environ.get("PORT", 5000))
+    print(f"🚀 Running on port {PORT}")
+    app.run(host="0.0.0.0", port=PORT)
