@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app, origins=["https://greentreebot.onrender.com", "https://t.me"], allow_headers=["Content-Type", "API-SECRET", "ngrok-skip-browser-warning"], methods=["GET", "POST", "OPTIONS"])
+CORS(app, supports_credentials=True)
 @app.after_request
 def apply_cors(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -399,4 +399,9 @@ def get_global_stats():
         "total_transactions": total_transactions
     }), 200
 
-# حذف `app.run()` در انتهای فایل
+import os
+
+PORT = int(os.environ.get("PORT", 5000))
+if __name__ == "__main__":
+    print(f"🚀 Running on port {PORT}")
+    app.run(host="0.0.0.0", port=PORT)
