@@ -129,6 +129,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </head>
 <body>
+<script>
+    window.SERVER_URL = "https://greentreebot.onrender.com";
+    window.API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7";
+</script>
     <div class="banner">
         <div class="user-info">
             👤 <span id="user-name">Guest</span> | 🆔 <span id="user-id">Unknown</span>
@@ -194,10 +198,7 @@ document.addEventListener("DOMContentLoaded", fetchGlobalStats);
 </script>
     <div id="ton-connect-button"></div>
     <div id="toast" class="toast"></div>
-<script>
-    window.SERVER_URL = "https://greentreebot.onrender.com";
-    window.API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7";
-</script>
+
     <!-- 📦 TonConnect SDK v3.1.0 -->
     <script src="https://unpkg.com/@tonconnect/sdk@3.1.0/dist/tonconnect-sdk.min.js"></script>
 

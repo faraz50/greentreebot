@@ -36,7 +36,7 @@ def verify_api_secret():
 
 @app.route("/")
 def index():
-    return send_from_directory("static", "index.html")
+    return send_from_directory(".", "index.html")
 
 @app.route("/register_user", methods=["POST"])
 def register_user():
