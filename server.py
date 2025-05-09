@@ -77,7 +77,6 @@ def register_user():
             print("❌ Missing required fields")
             return jsonify({"error": "User ID, first name, and birth year are required"}), 400
 
-        # برقراری اتصال با دیتابیس
         conn = get_db_connection()
         cursor = conn.cursor()
 
@@ -98,6 +97,7 @@ def register_user():
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, first_name, birth_year, tokens, None))
 
+        # اگر `referrer_id` وجود داشت، ثبت در جدول referrals
         if referrer_id:
             cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
             ref_exists = cursor.fetchone()
@@ -121,34 +121,6 @@ def register_user():
     except Exception as e:
         print(f"❌ Error in /register_user: {str(e)}")
         return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
-
-@app.route("/update_tokens", methods=["POST"])
-def update_tokens():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    tokens_to_add = data.get("tokens")
-
-    if not user_id or tokens_to_add is None or tokens_to_add <= 0:
-        print(f"⚠️ Invalid tokens_to_add value ({tokens_to_add}) for user {user_id}")
-        return jsonify({"error": "Invalid token update request"}), 400
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT total_tokens FROM users WHERE user_id = ?", (user_id,))
-    result = cursor.fetchone()
-
-    if not result:
-        conn.close()
-        return jsonify({"error": "User not found"}), 404
-
-    new_total_tokens = result["total_tokens"] + tokens_to_add
-    cursor.execute("UPDATE users SET total_tokens = ? WHERE user_id = ?", (new_total_tokens, user_id))
-    conn.commit()
-    conn.close()
-
-    print(f"✅ Updated tokens for user {user_id}: {new_total_tokens}")  # لاگ مقدار جدید توکن‌ها
-
-    return jsonify({"success": True, "total_tokens": new_total_tokens}), 200
 
 import traceback
 
