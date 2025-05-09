@@ -19,6 +19,7 @@ def get_user_info(user_id):
     except Exception as e:
         print(f"❌ Error fetching user info: {str(e)}")
         return None
+
 def register_user_on_server(user_id, first_name, birth_year, referrer_id=None):
     try:
         headers = {"API-SECRET": API_SECRET}
@@ -31,7 +32,15 @@ def register_user_on_server(user_id, first_name, birth_year, referrer_id=None):
             payload["referrer_id"] = referrer_id
 
         response = requests.post(f"{SERVER_URL}/register_user", json=payload, headers=headers)
-        return response.status_code == 201
+
+        print(f"🔍 Server Response: {response.status_code} - {response.text}")
+
+        if response.status_code == 201:
+            return True
+        else:
+            print(f"❌ Registration failed: {response.text}")
+            return False
+
     except Exception as e:
         print(f"❌ Error registering user: {str(e)}")
         return False

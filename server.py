@@ -62,6 +62,7 @@ def verify_api_secret():
 def index():
     return send_from_directory(".", "index.html")
 
+print(f"🔍 Register User Request Data: {data}")
 @app.route("/register_user", methods=["POST"])
 def register_user():
     data = request.get_json()
@@ -113,10 +114,13 @@ def register_user():
 
     print(f"✅ New user registered: {user_id} with {tokens} tokens")
     return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
+print(f"✅ User {user_id} registered successfully with {tokens} tokens")
 
 @app.route("/get_user_info", methods=["GET"])
 def get_user_info():
     user_id = request.args.get("user_id")
+    print(f"🔍 Fetching info for user_id: {user_id}")
+
     if not user_id:
         return jsonify({"error": "User ID is required"}), 400
 
@@ -128,6 +132,7 @@ def get_user_info():
     conn.close()
 
     if not user:
+        print(f"❌ User {user_id} not found.")
         return jsonify({"error": "User not found"}), 404
 
     total_tokens = user["total_tokens"] if user["total_tokens"] is not None else 0
