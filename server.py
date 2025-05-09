@@ -62,90 +62,64 @@ def verify_api_secret():
 def index():
     return send_from_directory(".", "index.html")
 
-print(f"🔍 Register User Request Data: {data}")
 @app.route("/register_user", methods=["POST"])
 def register_user():
-    data = request.get_json()
-    user_id = data.get("user_id")
-    first_name = data.get("first_name")
-    birth_year = data.get("birth_year")
-    referrer_id = data.get("referrer_id")  # ✅ اضافه شد
+    try:
+        # دریافت داده‌ها از درخواست
+        data = request.get_json()
+        print(f"🔍 Register User Request Data: {data}")
 
-    if not user_id or not first_name or not birth_year:
-        return jsonify({"error": "User ID, first name, and birth year are required"}), 400
+        user_id = data.get("user_id")
+        first_name = data.get("first_name")
+        birth_year = data.get("birth_year")
+        referrer_id = data.get("referrer_id")  # ✅ اضافه شد
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+        if not user_id or not first_name or not birth_year:
+            return jsonify({"error": "User ID, first name, and birth year are required"}), 400
 
-    # بررسی وجود کاربر در دیتابیس
-    cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
-    user_exists = cursor.fetchone()
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-    if user_exists:
+        # بررسی وجود کاربر در دیتابیس
+        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
+        user_exists = cursor.fetchone()
+
+        if user_exists:
+            conn.close()
+            return jsonify({"message": "User already registered", "user_id": user_id}), 200
+
+        # مقداردهی مقدار اولیه توکن‌ها بر اساس سال تولد
+        tokens = (datetime.now().year - birth_year) * 100
+
+        cursor.execute("""
+            INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) 
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, first_name, birth_year, tokens, None))
+
+        # اگر referrer_id وجود داشت، ثبت در جدول referrals
+        if referrer_id:
+            cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
+            ref_exists = cursor.fetchone()
+
+            if ref_exists:
+                cursor.execute("""
+                    INSERT INTO token_logs (user_id, tokens, category)
+                    VALUES (?, ?, 'invite')
+                """, (referrer_id, 250))
+
+                cursor.execute("""
+                    UPDATE users SET total_tokens = total_tokens + 250 WHERE user_id = ?
+                """, (referrer_id,))
+
+        conn.commit()
         conn.close()
-        return jsonify({"message": "User already registered", "user_id": user_id}), 200
 
-    # مقداردهی مقدار اولیه توکن‌ها بر اساس سال تولد
-    tokens = (datetime.now().year - birth_year) * 100
+        print(f"✅ New user registered: {user_id} with {tokens} tokens")
+        return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
 
-    # ایجاد کاربر جدید در دیتابیس
-    cursor.execute("INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) VALUES (?, ?, ?, ?, ?)", 
-                   (user_id, first_name, birth_year, tokens, None))
-        # ✅ اگر referrer وجود داشته باشد و کاربر جدید است، به معرف ۲۵۰ توکن بده
-    if referrer_id:
-        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
-        ref_exists = cursor.fetchone()
-
-        if ref_exists:
-            # افزودن لاگ به token_logs
-            cursor.execute("""
-                INSERT INTO token_logs (user_id, tokens, category)
-                VALUES (?, ?, 'invite')
-            """, (referrer_id, 250))
-
-            # افزایش total_tokens
-            cursor.execute("""
-                UPDATE users SET total_tokens = total_tokens + 250 WHERE user_id = ?
-            """, (referrer_id,))
-            print(f"🎉 250 tokens added to referrer {referrer_id}!")
-
-    conn.commit()
-    conn.close()
-
-    print(f"✅ New user registered: {user_id} with {tokens} tokens")
-    return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
-print(f"✅ User {user_id} registered successfully with {tokens} tokens")
-
-@app.route("/get_user_info", methods=["GET"])
-def get_user_info():
-    user_id = request.args.get("user_id")
-    print(f"🔍 Fetching info for user_id: {user_id}")
-
-    if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # 👇 wallet_address رو به SELECT اضافه کن
-    cursor.execute("SELECT user_id, total_tokens, wallet_address FROM users WHERE user_id = ?", (user_id,))
-    user = cursor.fetchone()
-    conn.close()
-
-    if not user:
-        print(f"❌ User {user_id} not found.")
-        return jsonify({"error": "User not found"}), 404
-
-    total_tokens = user["total_tokens"] if user["total_tokens"] is not None else 0
-    wallet_address = user["wallet_address"] if user["wallet_address"] is not None else ""
-
-    print(f"✅ User {user_id} has {total_tokens} tokens and wallet address: {wallet_address}")
-
-    # 👇 wallet_address رو به پاسخ اضافه کن
-    return jsonify({
-        "user_id": user["user_id"],
-        "total_tokens": total_tokens,
-        "wallet_address": wallet_address
-    }), 200
+    except Exception as e:
+        print(f"❌ Error in /register_user: {str(e)}")
+        return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 @app.route("/update_tokens", methods=["POST"])
 def update_tokens():
