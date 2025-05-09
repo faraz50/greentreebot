@@ -68,19 +68,32 @@ def register_user():
         data = request.get_json()
         print(f"🔍 Register User Request Data: {data}")
 
+        if not data:
+            print("❌ No data received or data is not valid JSON")
+            return jsonify({"error": "No data received or data is not valid JSON"}), 400
+
         user_id = data.get("user_id")
         first_name = data.get("first_name")
         birth_year = data.get("birth_year")
         referrer_id = data.get("referrer_id")
 
+        # چک کردن اینکه داده‌های ضروری وجود دارند
         if not user_id or not first_name or not birth_year:
-            print("❌ Missing required fields")
+            print(f"❌ Missing fields - user_id: {user_id}, first_name: {first_name}, birth_year: {birth_year}")
             return jsonify({"error": "User ID, first name, and birth year are required"}), 400
 
+        # بررسی اینکه آیا سال تولد عدد است
+        try:
+            birth_year = int(birth_year)
+        except ValueError:
+            print(f"❌ Invalid birth year: {birth_year}")
+            return jsonify({"error": "Birth year must be a number"}), 400
+
+        # اتصال به دیتابیس
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # چک کردن اینکه کاربر قبلاً ثبت شده یا نه
+        # بررسی وجود کاربر
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         user_exists = cursor.fetchone()
 
@@ -89,15 +102,16 @@ def register_user():
             print(f"✅ User {user_id} already registered.")
             return jsonify({"message": "User already registered", "user_id": user_id}), 200
 
-        # محاسبه توکن‌ها بر اساس سال تولد
+        # محاسبه توکن‌ها
         tokens = (datetime.now().year - birth_year) * 100
 
+        # ثبت کاربر
         cursor.execute("""
             INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) 
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, first_name, birth_year, tokens, None))
 
-        # اگر `referrer_id` وجود داشت، ثبت در جدول referrals
+        # اگر referrer_id وجود داشت
         if referrer_id:
             cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
             ref_exists = cursor.fetchone()
