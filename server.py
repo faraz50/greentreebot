@@ -66,7 +66,7 @@ def index():
 def register_user():
     try:
         data = request.get_json()
-        print(f"🔍 Register User Request Data: {data}")
+        print(f"🔍 Received data: {data}")
 
         if not data:
             print("❌ No data received or data is not valid JSON")
@@ -89,47 +89,27 @@ def register_user():
             print(f"❌ Invalid birth year: {birth_year}")
             return jsonify({"error": "Birth year must be a number"}), 400
 
-        # اتصال به دیتابیس
+        # بقیه کد بدون تغییر
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # بررسی وجود کاربر
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         user_exists = cursor.fetchone()
 
         if user_exists:
             conn.close()
-            print(f"✅ User {user_id} already registered.")
             return jsonify({"message": "User already registered", "user_id": user_id}), 200
 
-        # محاسبه توکن‌ها
         tokens = (datetime.now().year - birth_year) * 100
 
-        # ثبت کاربر
         cursor.execute("""
             INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) 
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, first_name, birth_year, tokens, None))
 
-        # اگر referrer_id وجود داشت
-        if referrer_id:
-            cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
-            ref_exists = cursor.fetchone()
-
-            if ref_exists:
-                cursor.execute("""
-                    INSERT INTO token_logs (user_id, tokens, category)
-                    VALUES (?, ?, 'invite')
-                """, (referrer_id, 250))
-
-                cursor.execute("""
-                    UPDATE users SET total_tokens = total_tokens + 250 WHERE user_id = ?
-                """, (referrer_id,))
-
         conn.commit()
         conn.close()
 
-        print(f"✅ User {user_id} registered successfully with {tokens} tokens")
         return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
 
     except Exception as e:
