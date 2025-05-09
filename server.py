@@ -65,30 +65,32 @@ def index():
 @app.route("/register_user", methods=["POST"])
 def register_user():
     try:
-        # دریافت داده‌ها از درخواست
         data = request.get_json()
         print(f"🔍 Register User Request Data: {data}")
 
         user_id = data.get("user_id")
         first_name = data.get("first_name")
         birth_year = data.get("birth_year")
-        referrer_id = data.get("referrer_id")  # ✅ اضافه شد
+        referrer_id = data.get("referrer_id")
 
         if not user_id or not first_name or not birth_year:
+            print("❌ Missing required fields")
             return jsonify({"error": "User ID, first name, and birth year are required"}), 400
 
+        # برقراری اتصال با دیتابیس
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # بررسی وجود کاربر در دیتابیس
+        # چک کردن اینکه کاربر قبلاً ثبت شده یا نه
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         user_exists = cursor.fetchone()
 
         if user_exists:
             conn.close()
+            print(f"✅ User {user_id} already registered.")
             return jsonify({"message": "User already registered", "user_id": user_id}), 200
 
-        # مقداردهی مقدار اولیه توکن‌ها بر اساس سال تولد
+        # محاسبه توکن‌ها بر اساس سال تولد
         tokens = (datetime.now().year - birth_year) * 100
 
         cursor.execute("""
@@ -96,7 +98,6 @@ def register_user():
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, first_name, birth_year, tokens, None))
 
-        # اگر referrer_id وجود داشت، ثبت در جدول referrals
         if referrer_id:
             cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (referrer_id,))
             ref_exists = cursor.fetchone()
@@ -114,7 +115,7 @@ def register_user():
         conn.commit()
         conn.close()
 
-        print(f"✅ New user registered: {user_id} with {tokens} tokens")
+        print(f"✅ User {user_id} registered successfully with {tokens} tokens")
         return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
 
     except Exception as e:
