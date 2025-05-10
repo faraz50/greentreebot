@@ -37,9 +37,8 @@ async function processWallet(address) {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "API-SECRET": window.API_SECRET,
-            "ngrok-skip-browser-warning": "true"
-        },
+            "API-SECRET": window.API_SECRET
+        }
         body: JSON.stringify({ user_id: userId, wallet_address: address })
     });
 

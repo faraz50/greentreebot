@@ -15,7 +15,6 @@ CORS(app, resources={
         "allow_headers": [
             "Content-Type", 
             "API-SECRET", 
-            "ngrok-skip-browser-warning"
         ],
         "supports_credentials": True,
         "methods": ["GET", "POST", "OPTIONS"]
@@ -31,7 +30,7 @@ def apply_cors(response):
     if origin in allowed_origins:
         response.headers["Access-Control-Allow-Origin"] = origin
 
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type, API-SECRET, ngrok-skip-browser-warning"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, API-SECRET"
     response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response.headers["Access-Control-Allow-Credentials"] = "true"
 
@@ -66,7 +65,6 @@ def index():
 def register_user():
     try:
         data = request.get_json()
-        print(f"🔍 Received data: {data}")
 
         if not data:
             print("❌ No data received or data is not valid JSON")
@@ -89,10 +87,11 @@ def register_user():
             print(f"❌ Invalid birth year: {birth_year}")
             return jsonify({"error": "Birth year must be a number"}), 400
 
-        # بقیه کد بدون تغییر
+        # اتصال به پایگاه داده
         conn = get_db_connection()
         cursor = conn.cursor()
 
+        # بررسی موجودیت کاربر
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         user_exists = cursor.fetchone()
 
@@ -102,6 +101,7 @@ def register_user():
 
         tokens = (datetime.now().year - birth_year) * 100
 
+        # ثبت کاربر
         cursor.execute("""
             INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) 
             VALUES (?, ?, ?, ?, ?)
@@ -110,6 +110,7 @@ def register_user():
         conn.commit()
         conn.close()
 
+        print(f"✅ User {user_id} successfully registered with {tokens} tokens.")
         return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
 
     except Exception as e:

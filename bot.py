@@ -36,7 +36,7 @@ def register_user_on_server(user_id, first_name, birth_year, referrer_id=None):
         if referrer_id:
             payload["referrer_id"] = referrer_id
 
-        print(f"🔍 Payload being sent: {payload}")
+        print(f"🔍 Payload being sent to server: {payload}")
 
         response = requests.post(f"{SERVER_URL}/register_user", json=payload, headers=headers)
 
@@ -49,7 +49,7 @@ def register_user_on_server(user_id, first_name, birth_year, referrer_id=None):
             return False
 
     except Exception as e:
-        print(f"❌ Error registering user: {str(e)}")
+        print(f"❌ Error in register_user_on_server: {str(e)}")
         return False
 
 @bot.message_handler(commands=['start'])
@@ -81,16 +81,30 @@ def process_birth_year(message):
     first_name = message.chat.first_name
     birth_year = message.text.strip()
 
+    # چک کردن اینکه سال تولد معتبر باشد
     if not birth_year.isdigit() or int(birth_year) < 1900 or int(birth_year) > datetime.now().year:
         bot.send_message(user_id, "❌ Invalid birth year. Please enter a valid year (e.g., `1995`).")
         bot.register_next_step_handler(message, process_birth_year)
         return
 
+    # تبدیل سال تولد به عدد
     birth_year = int(birth_year)
     tokens = (datetime.now().year - birth_year) * 100  
 
+    # چک کردن اینکه `user_referrer` تعریف شده باشد
+    if not hasattr(bot, "user_referrer"):
+        bot.user_referrer = {}
+
     referrer_id = bot.user_referrer.get(user_id)
-    if register_user_on_server(user_id, first_name, birth_year, referrer_id):
+
+    # پیام ثبت‌نام کاربر
+    bot.send_message(user_id, "⏳ Registering you... Please wait a moment.")
+
+    # فراخوانی متد ثبت‌نام در سرور
+    registration_success = register_user_on_server(user_id, first_name, birth_year, referrer_id)
+
+    if registration_success:
+        # پیام خوش‌آمدگویی - بدون تغییر در پیام
         bot.send_message(user_id, f"🎉 **You're in!**\n"
                                   f"💵 You've received `{tokens}` tokens as a welcome gift!\n"
                                   "🌳 Imagine planting one tree for every year of your life — a gift back to our planet for all it has given us!\n"

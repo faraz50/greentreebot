@@ -57,7 +57,6 @@ async function processPurchase(address) {
             headers: {
                 "Content-Type": "application/json",
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             },
             body: JSON.stringify({
                 user_id: userId,

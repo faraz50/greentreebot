@@ -176,7 +176,6 @@ async function fetchGlobalStats() {
         const response = await fetch(`${window.SERVER_URL}/get_global_stats`, {
             headers: {
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             }
         });
         const data = await response.json();

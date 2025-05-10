@@ -102,7 +102,6 @@ async function fetchTokensFromAPI() {
             headers: {
                 "Content-Type": "application/json",
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             }
         });
 
@@ -165,7 +164,6 @@ async function fetchInviteCountFromAPI() {
             headers: {
                 "Content-Type": "application/json",
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             }
         });
 
@@ -199,7 +197,6 @@ async function populateWalletAddress() {
         const response = await fetch(`${window.SERVER_URL}/get_user_info?user_id=${userId}`, {
             headers: {
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             }
         });
 
@@ -230,7 +227,6 @@ async function checkPurchaseStatus() {
         const response = await fetch(`${window.SERVER_URL}/check_purchase_status?user_id=${userId}`, {
             headers: {
                 "API-SECRET": window.API_SECRET,
-                "ngrok-skip-browser-warning": "true"
             }
         });
 
