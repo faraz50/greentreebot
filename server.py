@@ -36,7 +36,7 @@ def apply_cors(response):
 
     return response
 
-DB_FILE = "airdrop_bot.db"
+DB_FILE = "database.db"
 API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7"
 
 @app.route("/tonconnect-manifest.json")
