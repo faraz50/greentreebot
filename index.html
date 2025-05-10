@@ -129,10 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </head>
 <body>
-<script>
-    window.SERVER_URL = "https://greentreebot.onrender.com";
-    window.API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7";
-</script>
     <div class="banner">
         <div class="user-info">
             👤 <span id="user-name">Guest</span> | 🆔 <span id="user-id">Unknown</span>
@@ -158,6 +154,20 @@ document.addEventListener("DOMContentLoaded", function () {
         <button class="button" onclick="navigateTo('info_page_optimized.html')">Info</button>
     </div>
     <script src="script.js" defer></script>
+<script>
+    window.SERVER_URL = "https://greentreebot.onrender.com";
+    window.API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7";
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        if (!window.API_SECRET) {
+            console.error("❌ API_SECRET is missing!");
+            alert("API_SECRET is not set. Please check the server configuration.");
+        }
+    });
+</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {

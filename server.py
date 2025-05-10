@@ -57,53 +57,50 @@ def verify_api_secret():
         if not secret or secret != API_SECRET:
             return jsonify({"error": "Invalid API-SECRET"}), 403
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     return send_from_directory(".", "index.html")
 
-@app.route("/register_user", methods=["POST"])
+@app.route("/index.html", methods=["GET"])
+def serve_index():
+    return send_from_directory(".", "index.html")
+
+@app.route('/register_user', methods=['POST'])
 def register_user():
+    data = request.get_json()
+
+    api_secret = request.headers.get("API-SECRET")
+    print(f"🔍 Received API-SECRET: {api_secret}")
+
+    if not api_secret or api_secret != API_SECRET:
+        print("❌ Invalid API-SECRET")
+        return jsonify({"error": "Invalid API-SECRET"}), 403
+
+    user_id = data.get("user_id")
+    first_name = data.get("first_name")
+    birth_year = data.get("birth_year")
+
+    if not user_id or not first_name or not birth_year:
+        print("❌ Missing user data:", data)
+        return jsonify({"error": "Missing user data"}), 400
+
     try:
-        data = request.get_json()
-        print(f"📥 Received data in /register_user: {data}")
-        
-        user_id = data.get("user_id")
-        first_name = data.get("first_name")
-        birth_year = data.get("birth_year")
-        referrer_id = data.get("referrer_id")
-
-        if not user_id or not first_name or not birth_year:
-            print("❌ Missing required fields in the data")
-            return jsonify({"error": "Missing required fields"}), 400
-
-        # ایجاد ارتباط با دیتابیس
-        conn = get_db_connection()
+        conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
-        # چک کردن وجود کاربر
-        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
-        user_exists = cursor.fetchone()
-
-        if user_exists:
-            conn.close()
-            print("✅ User already registered.")
-            return jsonify({"message": "User already registered", "user_id": user_id}), 200
-
-        # ثبت کاربر جدید
-        tokens = (datetime.now().year - int(birth_year)) * 100
         cursor.execute("""
-            INSERT INTO users (user_id, first_name, birth_year, total_tokens) 
-            VALUES (?, ?, ?, ?)
-        """, (user_id, first_name, birth_year, tokens))
+            INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, first_name, birth_year, 0, ""))
 
         conn.commit()
         conn.close()
 
         print(f"✅ User {user_id} registered successfully.")
-        return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
+        return jsonify({"message": "User registered successfully"}), 201
 
-    except Exception as e:
-        print(f"❌ Error in /register_user: {str(e)}")
+    except sqlite3.Error as e:
+        print(f"❌ Database error during registration: {e}")
         return jsonify({"error": "Internal Server Error", "message": str(e)}), 500
 
 import traceback
@@ -364,6 +361,34 @@ def get_global_stats():
     }), 200
 
 import os
+
+@app.route("/get_user_info", methods=["GET"])
+def get_user_info():
+    user_id = request.args.get("user_id")
+
+    if not user_id:
+        return jsonify({"error": "User ID is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT user_id, first_name, birth_year, total_tokens, wallet_address FROM users WHERE user_id = ?", (user_id,))
+    user_data = cursor.fetchone()
+
+    conn.close()
+
+    if not user_data:
+        return jsonify({"error": "User not found"}), 404
+
+    user_info = {
+        "user_id": user_data[0],
+        "first_name": user_data[1],
+        "birth_year": user_data[2],
+        "total_tokens": user_data[3],
+        "wallet_address": user_data[4] if user_data[4] else "Not set"
+    }
+
+    return jsonify(user_info), 200
 
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 5000))
