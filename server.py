@@ -63,8 +63,12 @@ def index():
 
 @app.route("/register_user", methods=["POST"])
 def register_user():
-    try:
-        data = request.get_json()
+try:
+    data = request.get_json()
+    print(f"📥 Received data in /register_user: {data}")
+except Exception as e:
+    print(f"❌ Error parsing JSON data: {str(e)}")
+    return jsonify({"error": "Invalid JSON data"}), 400
 
         if not data:
             print("❌ No data received or data is not valid JSON")

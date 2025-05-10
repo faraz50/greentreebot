@@ -37,6 +37,7 @@ def register_user_on_server(user_id, first_name, birth_year, referrer_id=None):
             payload["referrer_id"] = referrer_id
 
         print(f"🔍 Payload being sent to server: {payload}")
+        print(f"📦 Payload being sent for registration: {payload}")
 
         response = requests.post(f"{SERVER_URL}/register_user", json=payload, headers=headers)
 
