@@ -63,58 +63,43 @@ def index():
 
 @app.route("/register_user", methods=["POST"])
 def register_user():
-try:
-    data = request.get_json()
-    print(f"📥 Received data in /register_user: {data}")
-except Exception as e:
-    print(f"❌ Error parsing JSON data: {str(e)}")
-    return jsonify({"error": "Invalid JSON data"}), 400
-
-        if not data:
-            print("❌ No data received or data is not valid JSON")
-            return jsonify({"error": "No data received or data is not valid JSON"}), 400
-
+    try:
+        data = request.get_json()
+        print(f"📥 Received data in /register_user: {data}")
+        
         user_id = data.get("user_id")
         first_name = data.get("first_name")
         birth_year = data.get("birth_year")
         referrer_id = data.get("referrer_id")
 
-        # چک کردن اینکه داده‌های ضروری وجود دارند
         if not user_id or not first_name or not birth_year:
-            print(f"❌ Missing fields - user_id: {user_id}, first_name: {first_name}, birth_year: {birth_year}")
-            return jsonify({"error": "User ID, first name, and birth year are required"}), 400
+            print("❌ Missing required fields in the data")
+            return jsonify({"error": "Missing required fields"}), 400
 
-        # بررسی اینکه آیا سال تولد عدد است
-        try:
-            birth_year = int(birth_year)
-        except ValueError:
-            print(f"❌ Invalid birth year: {birth_year}")
-            return jsonify({"error": "Birth year must be a number"}), 400
-
-        # اتصال به پایگاه داده
+        # ایجاد ارتباط با دیتابیس
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # بررسی موجودیت کاربر
+        # چک کردن وجود کاربر
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         user_exists = cursor.fetchone()
 
         if user_exists:
             conn.close()
+            print("✅ User already registered.")
             return jsonify({"message": "User already registered", "user_id": user_id}), 200
 
-        tokens = (datetime.now().year - birth_year) * 100
-
-        # ثبت کاربر
+        # ثبت کاربر جدید
+        tokens = (datetime.now().year - int(birth_year)) * 100
         cursor.execute("""
-            INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address) 
-            VALUES (?, ?, ?, ?, ?)
-        """, (user_id, first_name, birth_year, tokens, None))
+            INSERT INTO users (user_id, first_name, birth_year, total_tokens) 
+            VALUES (?, ?, ?, ?)
+        """, (user_id, first_name, birth_year, tokens))
 
         conn.commit()
         conn.close()
 
-        print(f"✅ User {user_id} successfully registered with {tokens} tokens.")
+        print(f"✅ User {user_id} registered successfully.")
         return jsonify({"success": True, "user_id": user_id, "total_tokens": tokens}), 201
 
     except Exception as e:
