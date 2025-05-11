@@ -73,6 +73,7 @@ def register_user():
 
     api_secret = request.headers.get("API-SECRET")
     print(f"🔍 Received API-SECRET: {api_secret}")
+    print(f"📥 Received data: {data}")  # ✅ افزودن لاگ برای دیباگ
 
     if not api_secret or api_secret != API_SECRET:
         print("❌ Invalid API-SECRET")
@@ -90,6 +91,15 @@ def register_user():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
+        # چک کردن اینکه آیا کاربر قبلاً ثبت شده یا نه
+        cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
+        existing_user = cursor.fetchone()
+
+        if existing_user:
+            print(f"ℹ️ User {user_id} already exists. Skipping insertion.")
+            return jsonify({"message": "User already registered"}), 200
+
+        # ثبت کاربر جدید
         cursor.execute("""
             INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address)
             VALUES (?, ?, ?, ?, ?)

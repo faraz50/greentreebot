@@ -97,21 +97,23 @@ def process_birth_year(message):
     }
 
     try:
-        # ثبت کاربر در دیتابیس
+        # ✅ افزودن لاگ برای دیباگ
+        print(f"📦 Payload being sent to server: {payload}")
+
+        # ارسال درخواست ثبت کاربر به سرور
         response = requests.post(f"{SERVER_URL}/register_user", json=payload, headers={"API-SECRET": API_SECRET})
-        response_data = response.json()
+        print(f"🔍 Server Response: {response.status_code} - {response.text}")
 
         if response.status_code == 201:
             bot.send_message(user_id, f"🎉 **You're in!**\n"
                                       f"💵 You've received `{tokens}` tokens as a welcome gift!\n"
-                                      "🌳 Imagine planting one tree for every year of your life — a gift back to our planet for all it has given us!\n"
-                                      "🔥 Earn even more: Invite friends, complete tasks, and grow our green community!\n")
+                                      "🌳 Imagine planting one tree for every year of your life — a gift back to our planet for all it has given us!\n")
 
             # ارسال لینک ورود به WebApp
             send_webapp_link(user_id, tokens)
 
         else:
-            bot.send_message(user_id, f"❌ Registration failed: {response_data.get('message', 'Unknown error')}")
+            bot.send_message(user_id, f"❌ Registration failed: {response.text}")
 
     except Exception as e:
         bot.send_message(user_id, f"❌ Registration failed: {str(e)}")
