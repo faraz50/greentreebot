@@ -50,7 +50,9 @@ def get_db_connection():
 
 @app.before_request
 def verify_api_secret():
-    allowed_routes = ["index", "register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count"]
+    allowed_routes = ["index", "serve_index", "register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count"]
+    
+    # چک کردن مسیر `/index.html`
     if request.endpoint not in allowed_routes:
         secret = request.headers.get("API-SECRET")
         print(f"🔍 Received API_SECRET: {secret}")

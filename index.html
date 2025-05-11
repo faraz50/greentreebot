@@ -111,16 +111,21 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("⚠️ Telegram user_id not available. Fallback to URL/localStorage");
     }
     
-    const urlParams = new URLSearchParams(window.location.search);
-    let userId = urlParams.get("user_id") || localStorage.getItem("user_id") || "Unknown";
-    let userName = localStorage.getItem("user_name") || "Guest";
-    let tokens = urlParams.get("tokens") || localStorage.getItem("tokens") || "0";
+const urlParams = new URLSearchParams(window.location.search);
+let userId = urlParams.get("user_id") || localStorage.getItem("user_id");
+let tokens = urlParams.get("tokens") || localStorage.getItem("tokens") || "0";
 
-    localStorage.setItem("user_id", userId);
-    localStorage.setItem("user_name", userName);
-    document.getElementById("user-id").textContent = userId;
-    document.getElementById("user-name").textContent = userName;
-    document.getElementById("token-count").textContent = tokens;
+// اگر user_id و tokens در URL موجود نباشند، پیام هشدار بده
+if (!userId || userId === "Unknown") {
+    console.warn("❌ User ID not provided!");
+    alert("User ID is missing. Please open the link from the bot.");
+    window.location.href = "/";
+    return;
+}
+
+localStorage.setItem("user_id", userId);
+document.getElementById("user-id").textContent = userId;
+document.getElementById("token-count").textContent = tokens;
 
     console.log("🔍 Debug: User ID:", userId);
     console.log("🔍 Debug: Tokens:", tokens);

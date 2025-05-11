@@ -116,7 +116,7 @@ def send_webapp_link(user_id, tokens):
     keyboard = InlineKeyboardMarkup()
     webapp_button = InlineKeyboardButton(
         "🌍 Open GreenTree MiniApp",
-        web_app=WebAppInfo(url=f"{WEBAPP_URL}index.html")
+        web_app=WebAppInfo(url=f"{WEBAPP_URL}index.html?user_id={user_id}&tokens={tokens}")
     )
     keyboard.add(webapp_button)
 
