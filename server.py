@@ -4,7 +4,7 @@ import sqlite3
 import os
 from datetime import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder=".", static_url_path="/")
 CORS(app, resources={
     r"/*": {
         "origins": [
@@ -50,9 +50,9 @@ def get_db_connection():
 
 @app.before_request
 def verify_api_secret():
-    allowed_routes = ["index", "serve_index", "register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count"]
-    
-    # چک کردن مسیر `/index.html`
+    allowed_routes = ["index", "serve_index", "register_user", "get_user_info", "tonconnect_manifest", "favicon", "save_wallet_address", "log_social_action", "purchase_tokens", "log_token_purchase", "get_global_stats", "get_invite_count", "static"]
+
+    # چک کردن مسیر `/static`
     if request.endpoint not in allowed_routes:
         secret = request.headers.get("API-SECRET")
         print(f"🔍 Received API_SECRET: {secret}")
