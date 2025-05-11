@@ -73,7 +73,7 @@ def register_user():
 
     api_secret = request.headers.get("API-SECRET")
     print(f"🔍 Received API-SECRET: {api_secret}")
-    print(f"📥 Received data: {data}")  # ✅ افزودن لاگ برای دیباگ
+    print(f"📥 Received data: {data}")
 
     if not api_secret or api_secret != API_SECRET:
         print("❌ Invalid API-SECRET")
@@ -91,12 +91,16 @@ def register_user():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
+        # افزودن لاگ قبل از ثبت کاربر
+        print(f"🛠️ Attempting to insert user: {user_id}, {first_name}, {birth_year}")
+
         # چک کردن اینکه آیا کاربر قبلاً ثبت شده یا نه
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         existing_user = cursor.fetchone()
 
         if existing_user:
             print(f"ℹ️ User {user_id} already exists. Skipping insertion.")
+            conn.close()
             return jsonify({"message": "User already registered"}), 200
 
         # ثبت کاربر جدید
@@ -105,10 +109,12 @@ def register_user():
             VALUES (?, ?, ?, ?, ?)
         """, (user_id, first_name, birth_year, 0, ""))
 
+        # افزودن لاگ بعد از ثبت کاربر
+        print(f"✅ User {user_id} inserted successfully.")
+
         conn.commit()
         conn.close()
 
-        print(f"✅ User {user_id} registered successfully.")
         return jsonify({"message": "User registered successfully"}), 201
 
     except sqlite3.Error as e:
