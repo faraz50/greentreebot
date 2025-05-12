@@ -97,19 +97,12 @@ def process_birth_year(message):
     }
 
     try:
-        # ✅ افزودن لاگ برای دیباگ
-        print(f"📦 Payload being sent to server: {payload}")
-
-        # ارسال درخواست ثبت کاربر به سرور
         response = requests.post(f"{SERVER_URL}/register_user", json=payload, headers={"API-SECRET": API_SECRET})
-        print(f"🔍 Server Response: {response.status_code} - {response.text}")
 
         if response.status_code == 201:
-            bot.send_message(user_id, f"🎉 **You're in!**\n"
-                                      f"💵 You've received `{tokens}` tokens as a welcome gift!\n"
-                                      "🌳 Imagine planting one tree for every year of your life — a gift back to our planet for all it has given us!\n")
-
-            # ارسال لینک ورود به WebApp
+            data = response.json()
+            tokens = data["total_tokens"]
+            bot.send_message(user_id, f"🎉 You've received `{tokens}` tokens as a welcome gift!")
             send_webapp_link(user_id, tokens)
 
         else:

@@ -6,7 +6,7 @@ def create_tables():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
-    # ایجاد جدول users
+    # ✅ ایجاد جدول کاربران
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id TEXT PRIMARY KEY,
@@ -17,21 +17,33 @@ def create_tables():
         )
     """)
 
-    # ایجاد جدول token_logs
+    # ✅ ایجاد جدول لاگ‌های توکن‌ها
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS token_logs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            log_id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT NOT NULL,
             tokens INTEGER NOT NULL,
             category TEXT NOT NULL,
-            platform TEXT DEFAULT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
+        )
+    """)
+
+    # ✅ ایجاد جدول تراکنش‌ها
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS transactions (
+            transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            amount INTEGER NOT NULL,
+            status TEXT CHECK(status IN ('pending', 'completed', 'failed')) DEFAULT 'pending',
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id)
         )
     """)
 
     conn.commit()
     conn.close()
-    print("✅ Tables created successfully.")
+    print("✅ Database and tables created successfully.")
 
 if __name__ == "__main__":
     create_tables()

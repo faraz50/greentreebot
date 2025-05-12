@@ -67,54 +67,49 @@ def index():
 def serve_index():
     return send_from_directory(".", "index.html")
 
-@app.route('/register_user', methods=['POST'])
+@app.route("/register_user", methods=["POST"])
 def register_user():
     data = request.get_json()
-
-    api_secret = request.headers.get("API-SECRET")
-    print(f"🔍 Received API-SECRET: {api_secret}")
-    print(f"📥 Received data: {data}")
-
-    if not api_secret or api_secret != API_SECRET:
-        print("❌ Invalid API-SECRET")
-        return jsonify({"error": "Invalid API-SECRET"}), 403
-
     user_id = data.get("user_id")
     first_name = data.get("first_name")
     birth_year = data.get("birth_year")
 
     if not user_id or not first_name or not birth_year:
-        print("❌ Missing user data:", data)
         return jsonify({"error": "Missing user data"}), 400
 
     try:
-        conn = sqlite3.connect(DB_FILE)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
-        # چک کردن اینکه آیا کاربر قبلاً ثبت شده یا نه
+        # چک کردن اینکه آیا کاربر قبلاً ثبت شده
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         existing_user = cursor.fetchone()
 
-        # لاگ وضعیت کاربر
-        print(f"🔍 User exists? {existing_user}")
-
         if existing_user:
             print(f"ℹ️ User {user_id} already exists. Updating tokens only.")
+            # به‌روزرسانی توکن‌ها
             cursor.execute("""
                 UPDATE users SET total_tokens = total_tokens + 100 WHERE user_id = ?
             """, (user_id,))
         else:
-            print(f"🛠️ Attempting to insert user: {user_id}, {first_name}, {birth_year}")
+            # ثبت کاربر جدید
+            tokens = (datetime.now().year - int(birth_year)) * 100
             cursor.execute("""
-                INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address)
-                VALUES (?, ?, ?, ?, ?)
-            """, (user_id, first_name, birth_year, 100, ""))
+                INSERT INTO users (user_id, first_name, birth_year, total_tokens)
+                VALUES (?, ?, ?, ?)
+            """, (user_id, first_name, birth_year, tokens))
+
+            # ثبت لاگ توکن‌ها
+            cursor.execute("""
+                INSERT INTO token_logs (user_id, tokens, category)
+                VALUES (?, ?, 'birth_year')
+            """, (user_id, tokens))
 
         conn.commit()
         conn.close()
 
-        print(f"✅ User {user_id} registered successfully.")
-        return jsonify({"message": "User registered successfully"}), 201
+        print(f"✅ User {user_id} registered successfully with {tokens} tokens.")
+        return jsonify({"message": "User registered successfully", "total_tokens": tokens}), 201
 
     except sqlite3.Error as e:
         print(f"❌ Database error during registration: {e}")
