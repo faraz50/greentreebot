@@ -91,30 +91,29 @@ def register_user():
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
 
-        # افزودن لاگ قبل از ثبت کاربر
-        print(f"🛠️ Attempting to insert user: {user_id}, {first_name}, {birth_year}")
-
         # چک کردن اینکه آیا کاربر قبلاً ثبت شده یا نه
         cursor.execute("SELECT user_id FROM users WHERE user_id = ?", (user_id,))
         existing_user = cursor.fetchone()
 
+        # لاگ وضعیت کاربر
+        print(f"🔍 User exists? {existing_user}")
+
         if existing_user:
-            print(f"ℹ️ User {user_id} already exists. Skipping insertion.")
-            conn.close()
-            return jsonify({"message": "User already registered"}), 200
-
-        # ثبت کاربر جدید
-        cursor.execute("""
-            INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address)
-            VALUES (?, ?, ?, ?, ?)
-        """, (user_id, first_name, birth_year, 0, ""))
-
-        # افزودن لاگ بعد از ثبت کاربر
-        print(f"✅ User {user_id} inserted successfully.")
+            print(f"ℹ️ User {user_id} already exists. Updating tokens only.")
+            cursor.execute("""
+                UPDATE users SET total_tokens = total_tokens + 100 WHERE user_id = ?
+            """, (user_id,))
+        else:
+            print(f"🛠️ Attempting to insert user: {user_id}, {first_name}, {birth_year}")
+            cursor.execute("""
+                INSERT INTO users (user_id, first_name, birth_year, total_tokens, wallet_address)
+                VALUES (?, ?, ?, ?, ?)
+            """, (user_id, first_name, birth_year, 100, ""))
 
         conn.commit()
         conn.close()
 
+        print(f"✅ User {user_id} registered successfully.")
         return jsonify({"message": "User registered successfully"}), 201
 
     except sqlite3.Error as e:
