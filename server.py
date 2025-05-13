@@ -410,6 +410,9 @@ def get_user_info():
 @app.route("/show_db", methods=["GET"])
 def show_db():
     try:
+        print("✅ Accessing /show_db")
+
+        # اتصال به دیتابیس
         conn = get_db_connection()
         cursor = conn.cursor()
 
