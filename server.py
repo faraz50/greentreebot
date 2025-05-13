@@ -407,6 +407,40 @@ def get_user_info():
 
     return jsonify(user_info), 200
 
+@app.route("/show_db", methods=["GET"])
+def show_db():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        # نمایش کاربران
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+
+        # نمایش لاگ‌های توکن‌ها
+        cursor.execute("SELECT * FROM token_logs")
+        token_logs = cursor.fetchall()
+
+        # نمایش تراکنش‌ها
+        cursor.execute("SELECT * FROM transactions")
+        transactions = cursor.fetchall()
+
+        conn.close()
+
+        # ساختار نمایش داده‌ها
+        data = {
+            "users": users,
+            "token_logs": token_logs,
+            "transactions": transactions
+        }
+
+        print(f"📦 Database Content: {data}")
+        return jsonify(data), 200
+
+    except Exception as e:
+        print(f"❌ Error accessing database: {e}")
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == "__main__":
     PORT = int(os.environ.get("PORT", 5000))
     print(f"🚀 Running on port {PORT}")
