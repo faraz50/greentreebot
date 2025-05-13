@@ -1,12 +1,12 @@
 import sqlite3
+import os
 
-DB_FILE = "/data/database.db"
+DB_FILE = "database.db"
 
 def create_tables():
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
 
-    # ✅ ایجاد جدول کاربران
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id TEXT PRIMARY KEY,
@@ -17,7 +17,6 @@ def create_tables():
         )
     """)
 
-    # ✅ ایجاد جدول لاگ‌های توکن‌ها
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS token_logs (
             log_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +28,6 @@ def create_tables():
         )
     """)
 
-    # ✅ ایجاد جدول تراکنش‌ها
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS transactions (
             transaction_id INTEGER PRIMARY KEY AUTOINCREMENT,

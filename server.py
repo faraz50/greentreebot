@@ -36,7 +36,7 @@ def apply_cors(response):
 
     return response
 
-DB_FILE = "/data/database.db"
+DB_FILE = "database.db"
 API_SECRET = "452428fb1c3e4f0a61a53ea2c74a941094325afdf3ed67bb1d807abeacbc1de7"
 
 @app.route("/tonconnect-manifest.json")
@@ -45,9 +45,13 @@ def tonconnect_manifest():
 
 def get_db_connection():
     print(f"📂 Database Path: {os.path.abspath(DB_FILE)}")
-    conn = sqlite3.connect(DB_FILE)
-    conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        conn = sqlite3.connect(DB_FILE)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except Exception as e:
+        print(f"❌ Database connection error: {e}")
+        raise e
 
 @app.before_request
 def verify_api_secret():
