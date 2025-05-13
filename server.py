@@ -410,7 +410,7 @@ def get_user_info():
 @app.route("/show_db", methods=["GET"])
 def show_db():
     try:
-        print("✅ Accessing /show_db")
+        print("✅ Accessing /show_db without API-SECRET")
 
         # اتصال به دیتابیس
         conn = get_db_connection()
